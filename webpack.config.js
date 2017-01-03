@@ -7,12 +7,19 @@ var projectPath = path.resolve(__dirname, "static");
 var nodeModulesPath = path.resolve(__dirname, "node_modules");
 var lib = path.resolve(__dirname, "lib");
 
+var entryObj = {
+    app: "./static/js/mian.js"
+};
+
+if(process.env.NODE_ENV === 'mock'){
+    entryObj = {
+        mock: "./mock/product.js",
+        app: "./static/js/mian.js",
+    };
+}
 
 module.exports = {
-    entry: {
-        mock: "./mock/product.js",
-        app: "./static/js/mian.js"
-    },
+    entry: entryObj,
     output: {
         path: path.resolve(__dirname, "dist"),
         filename: "[name].bundle.js?v=[hash]",
