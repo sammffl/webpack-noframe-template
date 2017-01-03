@@ -6,23 +6,30 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var projectPath = path.resolve(__dirname, "static");
 var nodeModulesPath = path.resolve(__dirname, "node_modules");
 var lib = path.resolve(__dirname, "lib");
-
+var ip = require('ip');
+var outputPath = './'
+var src = {
+	test: 'https://i0stg.yztcdn.com/app_js/h5/life/cjzx/',
+	production: 'https://i0.yztcdn.com/app_js/h5/life/cjzx/',
+}
 var entryObj = {
     app: "./static/js/mian.js"
 };
-
 if(process.env.NODE_ENV === 'mock'){
     entryObj = {
         mock: "./mock/product.js",
         app: "./static/js/mian.js",
     };
+}else{
+    outputPath: process.env.NODE_ENV == 'test'? src.test: src.production
 }
 
 module.exports = {
     entry: entryObj,
     output: {
         path: path.resolve(__dirname, "dist"),
-        filename: "[name].bundle.js?v=[hash]",
+        filename: outputPath +"[name].bundle.js?v=[hash]",
+		publicPath: '',
         // libraryTarget: "var",
         // library: "lib"
     },
