@@ -1,65 +1,42 @@
-var webpack = require("webpack");
-var path = require("path");
-var HtmlWebpackPlugin = require("html-webpack-plugin");
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
-
-var projectPath = path.resolve(__dirname, "static");
-var nodeModulesPath = path.resolve(__dirname, "node_modules");
-var lib = path.resolve(__dirname, "lib");
-var ip = require('ip');
-var outputPath = './'
-var src = {
-	test: 'https://i0stg.yztcdn.com/app_js/h5/life/cjzx/',
-	production: 'https://i0.yztcdn.com/app_js/h5/life/cjzx/',
-}
-var entryObj = {
-    app: "./static/js/mian.js"
-};
-if(process.env.NODE_ENV === 'mock'){
-    entryObj = {
-        mock: "./mock/product.js",
-        app: "./static/js/mian.js",
-    };
-}else{
-    outputPath: process.env.NODE_ENV == 'test'? src.test: src.production
-}
+var webpack = require('webpack'),
+    ExtractTextPlugin = require("extract-text-webpack-plugin"),
+    path = require('path'),
+    ip = require('ip'),
+    HtmlWebpackPlugin = require('html-webpack-plugin'),
+    ROOT_PATH = path.resolve(__dirname);
+// APP_PATH = path.resolve(ROOT_PATH, 'src');
 
 module.exports = {
-    entry: entryObj,
+    entry: {
+        mock: './mock/product.js',
+        main: "./static/js/mian.js"
+    },
     output: {
-        path: path.resolve(__dirname, "dist"),
-        filename: outputPath +"[name].bundle.js?v=[hash]",
-		publicPath: '',
-        // libraryTarget: "var",
-        // library: "lib"
+        path: path.join(__dirname, '/dist/'),
+        filename: '[name].[hash:4].js',
+        publicPath: './'
     },
     module: {
-        loaders: [
-            {
-                test: /\.css$/,
-                loader: "style-loader!css-loader"
-            },
-            {
-                test: /\.scss$/,
-                loader: "style-loader!css-loader!sass-loader?sourceMap"
-            },
-            {
-                test: /\.(png|jpg)$/,
-                loader: "url-loader?limit=8192"
-            },
-            {
-                test: /\.html$/,
-                loader: "html-loader"
-            },
-            {
-               test: /\.js$/,
-               exclude: /(node_modules|bower_components)/,
-               loader: 'babel-loader',
-               query: {
-                   presets: ['es2015']
-               }
-           }
-        ]
+        loaders: [{
+            test: /\.css$/,
+            loader: ExtractTextPlugin.extract('style', 'css!postcss') //"style-loader!css-loader?sourceMap&-minimize"
+        }, {
+            test: /\.scss$/,
+            loader: ExtractTextPlugin.extract('css?-minimize!autoprefixer-loader!sass') //"style-loader!css-loader!sass-loader?sourceMap"
+        }, {
+            test: /\.(png|jpg)$/,
+            loader: "url-loader?limit=8192"
+        }, {
+            test: /\.html$/,
+            loader: "html-loader"
+        }, {
+            test: /\.js$/,
+            exclude: /(node_modules|bower_components)/,
+            loader: 'babel-loader',
+            query: {
+                presets: ['es2015']
+            }
+        }]
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -71,21 +48,20 @@ module.exports = {
             },
             template: "./index.html",
         }),
-        new ExtractTextPlugin("./css/[name].css?v=[hash]"),
-        new webpack.ProvidePlugin({
-            $: "jquery",
+        new ExtractTextPlugin('[name].css'),
+        // new webpack.ProvidePlugin({
+        //     $: "jquery",
+        // }),
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoErrorsPlugin(),
+        new webpack.optimize.OccurenceOrderPlugin(),
+        new webpack.optimize.DedupePlugin(),
+        new webpack.optimize.AggressiveMergingPlugin({
+            minSizeReduce: 1.5,
+            moveToParents: true,
         }),
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify('mock')
+        })
     ],
-    resolve: {
-        extensions: ["", ".js", ".jsx", ".es6", "css", "scss", "png", "jpg", "jpeg"],
-        alias: {
-            "jquery": path.join(nodeModulesPath, "/jquery/dist/jquery.min"),
-            // "zepto": path.join(lib, "/zepto.min")
-        },
-    },
-    // externals: {
-    //     // require("jquery") 是引用自外部模块的
-    //     // 对应全局变量 jQuery
-    //     "jquery": "jQuery"
-    // }
-};
+}
