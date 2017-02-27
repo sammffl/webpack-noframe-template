@@ -1,11 +1,15 @@
 import '../sass/main.css';
 import '../sass/test.scss';
+// import Chart from 'chart.js';
 
 
+var $goBack = document.getElementById('go-back');
+// $goBack.addEventListener('touchend', function () {
+//     history.back();
+// }, false);
+var ua = navigator.userAgent;
+if (!/anydoor/ig.test(ua)) {
+    $goBack.style.display = 'block';
+}
 
-let img2 = document.createElement("img");
-img2.src = require("../images/Icon180.png");
-document.querySelector(".app").appendChild(img2);
-
-
-import './test.js';
+// $goBack.style.display = 'none';

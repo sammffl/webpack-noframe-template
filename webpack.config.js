@@ -4,18 +4,24 @@ var webpack = require('webpack'),
     ip = require('ip'),
     HtmlWebpackPlugin = require('html-webpack-plugin'),
     ROOT_PATH = path.resolve(__dirname);
-// APP_PATH = path.resolve(ROOT_PATH, 'src');
+APP_PATH = path.resolve(ROOT_PATH, 'static/js/main');
 
 module.exports = {
-    entry: {
-        mock: './mock/product.js',
-        main: "./static/js/mian.js"
-    },
+    context: __dirname,
+    entry: [
+        // Add the client which connects to our middleware
+        // You can use full urls like 'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr'
+        // useful if you run your app from another point like django
+        'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
+        // And then the actual application
+        './static/js/mian.js',
+    ],
     output: {
-        path: path.join(__dirname, '/dist/'),
-        filename: '[name].[hash:4].js',
-        publicPath: './'
+        path: __dirname,
+        publicPath: '/',
+        filename: 'bundle.js'
     },
+    devtool: '#source-map',
     module: {
         loaders: [{
             test: /\.css$/,
