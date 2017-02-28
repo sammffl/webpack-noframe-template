@@ -20,7 +20,7 @@ var outputPath = src[process.env.NODE_ENV];
 
 module.exports = {
     entry: {
-        app: "./static/js/mian.js"
+        app: "./src/main.js"
     },
     output: {
         path: path.resolve(__dirname, "dist"),
